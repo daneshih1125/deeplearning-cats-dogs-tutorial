@@ -1,12 +1,13 @@
+#/usr/bin/env python3
 '''
 Title           :create_lmdb.py
 Description     :This script divides the training images into 2 sets and stores them in lmdb databases for training and validation.
 Author          :Adil Moujahid
 Date Created    :20160619
-Date Modified   :20160625
+Date Modified   :20200609
 version         :0.2
-usage           :python create_lmdb.py
-python_version  :2.7.11
+usage           :python3 create_lmdb.py
+python_version  :3.x
 '''
 
 import os
@@ -52,14 +53,13 @@ validation_lmdb = '/home/ubuntu/deeplearning-cats-dogs-tutorial/input/validation
 os.system('rm -rf  ' + train_lmdb)
 os.system('rm -rf  ' + validation_lmdb)
 
-
-train_data = [img for img in glob.glob("../input/train/*jpg")]
-test_data = [img for img in glob.glob("../input/test1/*jpg")]
+train_data = [img for img in glob.glob("/home/ubuntu/deeplearning-cats-dogs-tutorial/input/train/*jpg")]
+test_data = [img for img in glob.glob("/home/ubuntu/deeplearning-cats-dogs-tutorial/input/test1/*jpg")]
 
 #Shuffle train_data
 random.shuffle(train_data)
 
-print 'Creating train_lmdb'
+print('Creating train_lmdb')
 
 in_db = lmdb.open(train_lmdb, map_size=int(1e12))
 with in_db.begin(write=True) as in_txn:
@@ -73,12 +73,12 @@ with in_db.begin(write=True) as in_txn:
         else:
             label = 1
         datum = make_datum(img, label)
-        in_txn.put('{:0>5d}'.format(in_idx), datum.SerializeToString())
-        print '{:0>5d}'.format(in_idx) + ':' + img_path
+        in_txn.put('{:0>5d}'.format(in_idx).encode(), datum.SerializeToString())
+        print('{:0>5d}'.format(in_idx) + ':' + img_path)
 in_db.close()
 
 
-print '\nCreating validation_lmdb'
+print('\nCreating validation_lmdb')
 
 in_db = lmdb.open(validation_lmdb, map_size=int(1e12))
 with in_db.begin(write=True) as in_txn:
@@ -92,8 +92,8 @@ with in_db.begin(write=True) as in_txn:
         else:
             label = 1
         datum = make_datum(img, label)
-        in_txn.put('{:0>5d}'.format(in_idx), datum.SerializeToString())
-        print '{:0>5d}'.format(in_idx) + ':' + img_path
+        in_txn.put('{:0>5d}'.format(in_idx).encode(), datum.SerializeToString())
+        print('{:0>5d}'.format(in_idx) + ':' + img_path)
 in_db.close()
 
-print '\nFinished processing all images'
+print('\nFinished processing all images')
